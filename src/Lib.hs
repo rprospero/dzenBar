@@ -14,6 +14,7 @@ import Graphics.Icons.Types
 import Pipes as P
 import Pipes.Concurrent as P
 import qualified Pipes.Prelude as P
+import System.IO
 import System.Process
 
 data Bar = Bar {
@@ -109,6 +110,7 @@ toBar x = "^r(3x" ++ show (round (x*10)) ++ ")"
 
 someFunc :: IO ()
 someFunc = do
+  hSetBuffering stdout LineBuffering
   (output, input) <- spawn unbounded
 
   watchProducer clockTime __clock output
