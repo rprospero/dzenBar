@@ -22,7 +22,8 @@ data Bar = Bar {
   _disks :: Double,
   _mail :: Int,
   _cpu :: Double,
-  _mem :: Double}
+  _mem :: Double,
+  _status :: String}
 
 defaultBar :: Bar
 defaultBar = Bar {
@@ -30,10 +31,12 @@ defaultBar = Bar {
   _disks = 0,
   _mail = 0,
   _cpu = 0,
-  _mem = 0}
+  _mem = 0,
+  _status = ""}
 
 instance Show Bar where
   show x = "^tw()" ++ (formatTime defaultTimeLocale "%R" $ _clock x) ++ " "
+    ++ "msg " ++ _status x
     ++ "disk " {- ++ iconDzen hddOCode -} ++ toBar (_disks x) ++ " "
     ++ show (_mail x) ++ " "
     ++ toBar (_cpu x) ++ " "
@@ -49,6 +52,8 @@ __cpu :: Lens' Bar Double
 __cpu = lens _cpu (\ bar x -> bar{_cpu=x})
 __mem :: Lens' Bar Double
 __mem = lens _mem (\ bar x -> bar{_mem=x})
+__status :: Lens' Bar String
+__status = lens _status (\ bar x -> bar{_status=x})
 
 clockTime ::Producer ZonedTime IO r
 clockTime = forever $ do
@@ -118,5 +123,6 @@ someFunc = do
   watchProducer mail __mail output
   watchProducer cpu __cpu output
   watchProducer mem __mem output
+  watchProducer P.stdinLn __status output
 
   runEffect $ fromInput input >-> apply defaultBar >-> P.show >-> unique "" >-> P.stdoutLn
