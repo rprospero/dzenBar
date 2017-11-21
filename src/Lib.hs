@@ -1,4 +1,4 @@
-{-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE Rank2Types, OverloadedStrings #-}
 module Lib
     ( someFunc
     ) where
@@ -9,6 +9,8 @@ import Control.Monad (forever)
 import Data.Time.Calendar
 import Data.Time.Format
 import Data.Time.LocalTime
+import Graphics.Icons.FontAwesome
+import Graphics.Icons.Types
 import Pipes as P
 import Pipes.Concurrent as P
 import qualified Pipes.Prelude as P
@@ -21,6 +23,7 @@ data Bar = Bar {
   _cpu :: Double,
   _mem :: Double}
 
+defaultBar :: Bar
 defaultBar = Bar {
   _clock = ZonedTime (LocalTime (ModifiedJulianDay 0) midnight) utc,
   _disks = 0,
@@ -29,8 +32,11 @@ defaultBar = Bar {
   _mem = 0}
 
 instance Show Bar where
-  show x = (formatTime defaultTimeLocale "%R" $ _clock x) ++ " " ++ toBar (_disks x) ++ " " ++
-    show (_mail x) ++ " " ++ toBar (_cpu x) ++ " " ++ toBar (_mem x)
+  show x = "^tw()" ++ (formatTime defaultTimeLocale "%R" $ _clock x) ++ " "
+    ++ "disk " {- ++ iconDzen hddOCode -} ++ toBar (_disks x) ++ " "
+    ++ show (_mail x) ++ " "
+    ++ toBar (_cpu x) ++ " "
+    ++ toBar (_mem x)
 
 __clock :: Lens' Bar ZonedTime
 __clock = lens _clock (\ bar x -> bar{_clock=x})
@@ -56,8 +62,9 @@ disks = forever $ do
 
 mail :: Producer Int IO r
 mail = forever $ do
-  result <- lift $ readProcess "/usr/bin/notmuch" ["count", "tag:unread"] ""
-  yield $ read result
+  -- result <- lift $ readProcess "/usr/bin/notmuch" ["count", "tag:unread"] ""
+  -- yield $ read result
+  yield 0
   lift $ threadDelay 5000000
 
 cpu :: Producer Double IO r
