@@ -36,9 +36,9 @@ defaultBar = Bar {
 
 instance Show Bar where
   show x = "^tw()" ++ (formatTime defaultTimeLocale "%R" $ _clock x) ++ " "
-    ++ "msg " ++ _status x
-    ++ "disk " {- ++ iconDzen hddOCode -} ++ toBar (_disks x) ++ " "
-    ++ show (_mail x) ++ " "
+    ++ "msg " ++ _status x ++ " "
+    ++ iconDzen hddOCode ++ toBar (_disks x) ++ " "
+    ++ iconDzen envelopeCode ++ show (_mail x) ++ " "
     ++ toBar (_cpu x) ++ " "
     ++ toBar (_mem x)
 
@@ -68,9 +68,8 @@ disks = forever $ do
 
 mail :: Producer Int IO r
 mail = forever $ do
-  -- result <- lift $ readProcess "/usr/bin/notmuch" ["count", "tag:unread"] ""
-  -- yield $ read result
-  yield 0
+  result <- lift $ readProcess "/usr/bin/notmuch" ["count", "tag:unread"] ""
+  yield $ read result
   lift $ threadDelay 5000000
 
 cpu :: Producer Double IO r
