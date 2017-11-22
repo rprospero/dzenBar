@@ -36,7 +36,7 @@ defaultBar = Bar {
 
 instance Show Bar where
   show x = "^tw()" ++ (formatTime defaultTimeLocale "%R" $ _clock x) ++ " "
-    ++ "msg " ++ _status x ++ " "
+    ++ _status x ++ "^bg() "
     ++ iconDzen hddOCode ++ toBar (_disks x) ++ " "
     ++ iconDzen envelopeCode ++ show (_mail x) ++ " "
     ++ toBar (_cpu x) ++ " "
