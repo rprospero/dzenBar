@@ -115,6 +115,7 @@ toBar x = "^r(3x" ++ show (round (x*10)) ++ ")"
 someFunc :: IO ()
 someFunc = do
   hSetBuffering stdout LineBuffering
+  hSetBuffering stdin LineBuffering
   (output, input) <- spawn unbounded
 
   watchProducer clockTime __clock output
